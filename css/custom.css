@@ -8,6 +8,10 @@
   text-align: right;
 }
 
+.reveal ul {
+  width: 100%;
+}
+
 /* .reveal [data-background-image$="back-in-time.jpg"] > * { */
 .reveal [data-background-image] > * {
   background-color: rgba(88, 110, 157, 0.66);
@@ -16,6 +20,7 @@
 
 .reveal [data-background-image="images/giphy-confused.gif"] > *,
 .reveal [data-background-image="images/we-can-do-it.jpg"] > *,
+.reveal [data-background-image="images/mind-blown.gif"] > *,
 .reveal [data-background-image="images/confused.gif"] > * {
   margin-top: 33%;
 }
@@ -38,4 +43,8 @@
   border: 0;
   box-shadow: none;
   width: 256px;
+}
+
+.hljs-comment {
+  color: #cb4b16!important;
 }
