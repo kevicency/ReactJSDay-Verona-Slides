@@ -1,4 +1,4 @@
-# CSS is dead! <br/> Long live
+## CSS is dead! <br/> &mdash; <br/> Long live
 <img id="css-modules-logo" data-src="images/css-modules-logo.png" />
 
 <p id="author">
@@ -9,19 +9,13 @@
 
 
 <!-- .slide: data-transition="fade" -->
-## The biggest problem with CSS?
+## What makes working with CSS so hard?
 
 
 <!-- .slide: data-transition="fade" data-background="images/globals-everywhere.jpg" data-background-size="cover" -->
-## The biggest problem with CSS
 
 
-## Global state is bad!
-* No isolation <br/>
-  &rarr; 3rd party libs can break your stuff or vice versa
-* Dependency on inclusion / load order <br/>
-  &rarr; Nasty bugs when dynamically loading additional CSS
-* and many more...
+## Global state makes developers sad!
 
 
 ## ~~Solutions~~ Workarounds
@@ -31,13 +25,15 @@
   <br/> &rarr; They do not solve the problem of global state but they make it more manageable. 
 
 Note:
-* Architecture Guidelines minimize the risk of creating global conflicts in your codebase
-* Preprocessors help implementing those guidelines
+* The funny thing is that JS had the same problems a few years ago
 
 
 
 <!-- .slide: data-background="images/mind-blown.gif" data-background-size="cover" -->
 ## JS had the same problem(s) <br /> just a few years ago!
+
+Note:
+* But the problem is mostly solved by now
 
 
 <!-- .slide: data-transition="fade" -->
@@ -48,57 +44,63 @@ Note:
 ## Modules did!
 
 Note:
-* The adaption of npm for client side development with the help of webpack
 * Can we use the same approch to get rid of the globals in CSS?
   
 
 
-## JS Modules in Action
+### Applying the concept of JS Modules to CSS
 ```sh
-npm i --save react react-dom
+npm i --save bootstrap
 ```
+
 ```js
-import React from 'react';
-import ReactDOM from 'react-dom';
-
-ReactDOM.render(
-  <div>Hello World!</div>,
-  document.body
-);
+import style from 'bootstrap/dist/bootstrap.css'
 ```
 
-Note:
-Just a quick reminder...
+<ul>
+  <li class="fragment" data-fragment-index="1">
+    By importing a stylesheet as a module we get a **local** reference to it.
+  </li>
+  <li class="fragment" data-fragment-index="2">
+    All class names in this stylesheet module are **local** by default. 
+  </li>
+  <li class="fragment" data-fragment-index="3">
+    CSS only knows **global**, how can we safely get there? 
+  </li>
+</ul>
 
 
-### Applying the idea of JS Modules to CSS
-* Class names in a stylesheet are **local** by default.
+### What is a stylesheet module?
+```js
+import style from 'bootstrap/dist/bootstrap.css'
+```
 
-  ```sh
-  npm i --save bootstrap
-  ```
-  <!-- .element: class="fragment" data-fragment-index="1" -->
-  ```js
-  import style from 'bootstrap/dist/bootstrap.css'
+```js
+style === {
+  'btn': '_23_aKvs-b8bW2Vg3fwHozO',
+  'btn-primary': '_13LGdX8RMStbBE9w-t0gZ1',
+  'btn-default': '_53_ade-Zm9vYmFyYmF6oPx',
+  // ...
+};
+``` 
+<!-- .element: class="fragment" data-fragment-index="1" -->
 
-  style === {
-    'btn': '_23_aKvs-b8bW2Vg3fwHozO',
-    'btn-default': '_13LGdX8RMStbBE9w-t0gZ1',
-    'btn-primary': '_53_ade-Zm9vYmFyYmF6oPx',
-    // ...
-  };
-  ``` 
-  <!-- .element: class="fragment" data-fragment-index="3" -->
-<li class="fragment" data-fragment-index="3">
-  The style object is a map of <br/> **local** (`.btn`) &rarr;  **global** (`._23_aKvs-b8bW2Vg3fwHozO`)
-</li>
-<li class="fragment" data-fragment-index="4">
-  **global** class names are random hashes &rarr; no collisions
-</li>
-<li class="fragment" data-fragment-index="5">
-  The final *generated* stylesheet has all **local** class names replaced with the **global** class names.
-</li>
+<ul>
+  <li class="fragment" data-fragment-index="1">
+    The stylesheet module is a map of <br/> **local** (`btn`) &rarr;  **global** (`_23_aKvs-b8bW2Vg3fwHozO`)
+  </li>
+  <li class="fragment" data-fragment-index="2">
+    **global** class names are random hashes &rarr; no collisions
+  </li>
+  <li class="fragment" data-fragment-index="3">
+    The stylesheet that will be added to the document will be  *generated*, 
+    with all **local** class names replaced by their **global** equivalent.
+  </li>
+</ul>
 
+
+
+## How can we actually use that?
 
 
 ### Setting up Webpack
@@ -110,7 +112,7 @@ Just a quick reminder...
   export const config = {
       // ...
       loaders: [
-        { test: /\.css$/, loader: "css-loader?module" }
+        { test: /\.css$/, loader: "css?module" }
       ]
   }
   ```
@@ -118,7 +120,7 @@ Just a quick reminder...
 * **`?module`** enables CSS Modules support
 
 
-### Using CSS Modules
+### CSS Modules Example
 ```js
 // Button.js
 import style from 'bootstrap/dist/bootstrap.css'
@@ -126,9 +128,12 @@ import style from 'bootstrap/dist/bootstrap.css'
   'btn': '_23_aKvs-b8bW2Vg3fwHozO',
   'btn-default': '_13LGdX8RMStbBE9w-t0gZ1'
 }; */
+```
+<!-- .element: class="fragment" data-fragment-index="0" -->
 
+```js
 export default const Button = ({ children }) => {
-  const className = style['btn'] + ' ' + style['btn-default'];
+  const className = style['btn'] + ' ' + style['btn-primary'];
 
   return (
     <button className={className}>
@@ -137,39 +142,39 @@ export default const Button = ({ children }) => {
   )
 }
 ```
+<!-- .element: class="fragment" data-fragment-index="1" -->
+
 ```js
-import Button from './Button.js'
 React.render(<Button>Submit</Button>, body)
 ```
-<!-- .element: class="fragment" data-fragment-index="1" -->
+<!-- .element: class="fragment" data-fragment-index="2" -->
 ```html
 <button class="_23_aKvs-b8bW2Vg3fwHozO _13LGdX8RMStbBE9w-t0gZ1">
     Submit
 </button>
 ```
-<!-- .element: class="fragment" data-fragment-index="2" -->
+<!-- .element: class="fragment" data-fragment-index="3" -->
 
 Note:
-Import a stylesheet which gives us a reference to the styles
+* Using the **local** class name **`btn`** to get a reference to the **global** class name.
 
 
 <!-- .slide: data-background="images/giphy-confused.gif" data-background-size="cover" -->
-### This makes developing / debugging a hell!
+### Is there a human readable version of that?
 
 Note:
 You might be thinking: 'This is nice for production, but...'
 
 
-### During Development
+### Development Setup
 * Use **`localIdentName`** query paramter to customize the generated ident.
-* Development example:
 
 ```
-css-loader?module&localIdentName=[path][name]__[local] 
+css?module&localIdentName=[path][name]__[local] 
 ```
 ```html
 <button class="node_modules-bootstrap-dist-bootstrap__btn
-               node_modules-bootstrap-dist-bootstrap__btn-default">
+               node_modules-bootstrap-dist-bootstrap__btn-primary">
   Submit
 </button>
 ```
@@ -179,8 +184,9 @@ css-loader?module&localIdentName=[path][name]__[local]
 ### Awesome, but wait... <br/> do I need to bundle my unit tests now?!
 
 
-### Unit Testing
-* Use `css-modules/css-modules-require-hook` to require css modules during runtime.
+### Unit Testing Setup
+* Use `css-modules/css-modules-require-hook` to require 
+  css modules in node during runtime.
 
 ```js
 /* test-setup.js */
@@ -201,20 +207,27 @@ import { shallow } from 'enzyme'
 test('Button', t => {
   const button = shallow(<Button>Test</Button>)
   t.ok(button.hasClass('btn'))
-  t.ok(button.hasClass('btn-default'))
+  t.ok(button.hasClass('btn-primary'))
 })
 ```
 
 
-### How do you include <br/> the global styles in your document?
-* Use **`style-loader`** to add them as inline `<style />`s
-* Use **`extract-text-webpack-plugin`** to extract them to a stylesheet
+### How do you include <br/> the global stylesheet in your document?
+* Use **`style-loader`** to include it as inline `<style />`
+```
+export const config = {
+    loaders: [
+      { test: /\.css$/, loader: "style!css?module" }
+    ]
+}
+```
+* Use **`extract-text-webpack-plugin`** to write it to a file
 ```
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
 export const config = {
-    // ...
     loaders: [
-      { test: /\.css$/, loader: "style-loader!css-loader?module" }
+      { test: /\.css$/, 
+        loader: ExtractTextPlugin.extract('style', 'css?module') }
     ],
     plugins: [
         new ExtractTextPlugin("styles.css")
@@ -252,6 +265,7 @@ export const config = {
 
 
 ### Works flawlessly with
+* Your existing codebase
 * Preprocessors
 * PostCSS for additional syntax (e.g. variables)
 * CSSNext
@@ -263,7 +277,7 @@ import CSSModules from 'react-css-modules'
 import style from 'bootstrap/dist/bootstrap.css'
 
 const Button = ({ children }) => (
-  <div styleName="btn btn-default"
+  <div styleName="btn btn-primary"
        className="some-global-class">
     { children }
   </div>
@@ -271,12 +285,12 @@ const Button = ({ children }) => (
 export default CSSModules(Button, style)
 ```
 
+* `styleName` for **local** styles, `className` for **global** styles.
 * No more
   ```js
-  className={`${style['btn']} ${style['btn-default']}`}
+  <div className={`${style['btn']} ${style['btn-primary']}`} />
   ```
-* `styleName` for **local** styles, `className` for **global** styles.
-* Bonus: detects undefined local class names during runtime.
+* Bonus: detects undefined **local** class names during runtime.
 
 
 
