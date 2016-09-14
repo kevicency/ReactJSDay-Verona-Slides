@@ -2,7 +2,7 @@ Hey, my name is Kevin and welcome to my lightning talk
 'CSS id dead! Long live CSS! but in modules please'
 
 Let me ask you a question first: 
-'What makes working with CSS so hard'.
+'What makes working with CSS so hard?'.
 And the answer is not 'Internet Explorer 7'
 but it's the globals.
 
@@ -11,7 +11,7 @@ They are basically everywhere in CSS land.
 And as we all know, a global state makes developers sad!
 
 And there is no real solution to that problem.
-There are Archtiecture Guidelines that some of you might know
+There are Architecture Guidelines for CSS that some of you might know
 and Preprocessors that some of you might use.
 But they do not solve the problem of global state,
 they only make it more manageable.
@@ -20,13 +20,13 @@ And the funny thing is that JS had the same problem
 a few years ago. But there are no sad JS developers
 here today, right?
 
-So what killed the globals in JS?
+So what killed the global state in JS?
 
 Well, the modules did! With npm and webpack doing the heavy lifting.
 
 So why don't we just apply the concept of JS modules to CSS.
 So we start by installing our css module, f.e. bootstrap, and import 
-the stylesheet that comes with it.
+the stylesheet that comes with it as module.
 
 The difference here is that by importing a stylesheet as a module we 
 get a local reference to it. And let's say that all the class names
@@ -35,7 +35,7 @@ But the problem still is that CSS only knows global, so how can we safely
 get there?
 
 Well, let's see what a stylesheet module exactly is. The stylesheet module
-is a map of a local class names, f.e. btn, to a global class name, like that
+is a map of a local class names defined in the stylesheet, f.e. btn, to a global class name, like that
 has you're seeing here. And by having random hashes as global class names
 the chances for collisions  are negligible. And in the end, the stylesheet that
 will be added to the document will be a *generated* one, 

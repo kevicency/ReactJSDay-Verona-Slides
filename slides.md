@@ -1,9 +1,9 @@
-## CSS is dead! <br/> &mdash; <br/> Long live
-<img id="css-modules-logo" data-src="images/css-modules-logo.png" />
+## CSS is dead! <br/> &mdash; <br/> Long live CSS!
+<small>*but in modules, please!*</small>
 
 <p id="author">
-  by Kevin Mees /
-  <img src="./images/github-logo.png" />kmees
+  by <img alt="Experts Inside" src="./images/xi-logo_32.png" />Kevin Mees /
+  <img alt="GitHub" src="./images/github-logo.png" />kmees
 </p>
 
 
@@ -22,7 +22,7 @@
 * Architecture Guidelines (BEM, SMACSS, OOCSS, ...)
 * Preprocessors (SASS, LESS, Stylus, ...)
 
-  <br/> &rarr; They do not solve the problem of global state but they make it more manageable. 
+  <br/> &rarr; They **do not solve** the problem of global state but they make it more **manageable**. 
 
 Note:
 * The funny thing is that JS had the same problems a few years ago
@@ -90,13 +90,37 @@ style === {
     The stylesheet module is a map of <br/> **local** (`btn`) &rarr;  **global** (`_23_aKvs-b8bW2Vg3fwHozO`)
   </li>
   <li class="fragment" data-fragment-index="2">
-    **global** class names are random hashes &rarr; no collisions
+    **global** class name is a hash of the **local** class name <br />
+    with the stylesheet added as salt <br />
+    &rarr; **local** class names can be reused across stylesheets
   </li>
   <li class="fragment" data-fragment-index="3">
     The stylesheet that will be added to the document will be  *generated*, 
-    with all **local** class names replaced by their **global** equivalent.
+    with all **local** class names replaced by their corresponding **global** class name.
   </li>
 </ul>
+
+
+### Same **local** &rarr; different **global**
+```css
+/* dialog.css */
+.btn { /* ... */ }
+
+/* form.css */
+.btn { /* ... */ }
+```
+```js
+import dialogStyle from './dialog.css'
+import formStyle from './dialog.css'
+
+console.log(dialogStyle['btn'])
+// => '_62_gOwm-q3lJt6g4FmtI4g',
+console.log(formStyle['btn'])
+// => '_47_bDog-e5bJ5Qg5fkBidO',
+
+assert.notEqual(dialogStyle['btn'], formStyle['btn'])
+```
+
 
 
 
@@ -169,8 +193,8 @@ You might be thinking: 'This is nice for production, but...'
 ### Development Setup
 * Use **`localIdentName`** query paramter to customize the generated ident.
 
-```
-css?module&localIdentName=[path][name]__[local] 
+```js
+{ loader: 'css?module&localIdentName=[path][name]__[local]' }
 ```
 ```html
 <button class="node_modules-bootstrap-dist-bootstrap__btn
@@ -241,6 +265,28 @@ export const config = {
 ## Want some sugar on top?
 
 
+### React integration via HoC
+```
+import CSSModules from 'react-css-modules'
+import style from 'bootstrap/dist/bootstrap.css'
+
+const Button = ({ children }) => (
+  <div styleName="btn btn-primary"
+       className="some-global-class">
+    { children }
+  </div>
+)
+export default CSSModules(Button, style)
+```
+
+* `styleName` for **local** styles, `className` for **global** styles.
+* No more
+  ```js
+  const className = style['btn'] + ' ' + style['btn-primary']
+  ```
+* Bonus: detects undefined **local** class names during runtime.
+
+
 ### Composition
 * Compose class names in the same file
   ```css
@@ -265,37 +311,15 @@ export const config = {
 
 
 ### Works flawlessly with
-* Your existing codebase
 * Preprocessors
 * PostCSS for additional syntax (e.g. variables)
 * CSSNext
-
-
-### Better integration with React
-```
-import CSSModules from 'react-css-modules'
-import style from 'bootstrap/dist/bootstrap.css'
-
-const Button = ({ children }) => (
-  <div styleName="btn btn-primary"
-       className="some-global-class">
-    { children }
-  </div>
-)
-export default CSSModules(Button, style)
-```
-
-* `styleName` for **local** styles, `className` for **global** styles.
-* No more
-  ```js
-  <div className={`${style['btn']} ${style['btn-primary']}`} />
-  ```
-* Bonus: detects undefined **local** class names during runtime.
+* ...
 
 
 
 # Fin
-Thank you for listening!
+Thanks for listening!
 
 <p id="author">
   Slides @ <img src="./images/github-logo.png" />[kmees/Slides-ReactNext2016](https://github.com/kmees/ReactNext2016-Slides)
