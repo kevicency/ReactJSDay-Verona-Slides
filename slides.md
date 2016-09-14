@@ -112,7 +112,7 @@ style === {
 ```
 ```js
 import dialogStyle from './dialog.css'
-import formStyle from './dialog.css'
+import formStyle from './form.css'
 
 console.log(dialogStyle['btn'])
 // => '_62_gOwm-q3lJt6g4FmtI4g',
@@ -210,8 +210,9 @@ You might be thinking: 'This is nice for production, but...'
 
 
 ### Unit Testing Setup
-* Use `css-modules/css-modules-require-hook` to require 
+* Use **`css-modules-require-hook`** to require 
   css modules in node during runtime.
+* **`generateScopedName`** behaves like **`localIdentName`**
 
 ```js
 /* test-setup.js */
@@ -221,8 +222,6 @@ hook({
   generateScopedName: '[local]',
 })
 ```
-
-* **`generateScopedName`** behaves like **`localIdentName`**
 
 ```
 /* button.test.js */
