@@ -12,6 +12,7 @@
 ## What makes working with CSS so hard?
 
 
+# &nbsp;  
 <!-- .slide: data-transition="fade" data-background="images/globals-everywhere.jpg" data-background-size="cover" -->
 
 
