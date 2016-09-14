@@ -157,8 +157,3 @@ ul, ol, div, p {
 	position: absolute;
 	font-size: 14px;
 }
-
-
-.reveal [data-background-image] {
-  margin: 0!important;
-}
