@@ -28,10 +28,11 @@
   margin-top: 60px;
 }
 
-#author img { 
-  border: 0;
-  box-shadow: none;
-  margin: 0 5px -3px 0;
+#author img,
+.github-logo {
+  border: 0!important;
+  box-shadow: none!important;
+  margin: 0 5px -3px 0!important;
 }
 
 #css-modules-logo {
@@ -42,4 +43,9 @@
 
 .hljs-comment {
   color: #cb4b16!important;
+}
+
+img.no-border {
+  border: 0!important;
+  box-shadow: none!important;
 }

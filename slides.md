@@ -210,30 +210,36 @@ You might be thinking: 'This is nice for production, but...'
 
 
 ### Unit Testing Setup
+```
+/* button.test.js */
+import Button from './Button.js'
+import { shallow } from 'enzyme'
+import test from 'tape'
+
+test('Button', t => {
+  const button = shallow(<Button>Test</Button>)
+
+  t.ok(button.hasClass('btn'))
+  t.ok(button.hasClass('btn-primary'))
+})
+```
+* This test will throw a runtime error because node doesn't
+  know how to require CSS files
+
+
+### Unit testing setup
+
 * Use **`css-modules-require-hook`** to require 
-  css modules in node during runtime.
-* **`generateScopedName`** behaves like **`localIdentName`**
+  CSS files as modules in node during runtime.
+* **`generateScopedName`** behaves like **`localIdentName`** for css-loader
 
 ```js
 /* test-setup.js */
 const hook = require('css-modules-require-hook')
 
-hook({
-  generateScopedName: '[local]',
-})
+hook({ generateScopedName: '[local]' })
 ```
-
-```
-/* button.test.js */
-import Button from './Button.js'
-import { shallow } from 'enzyme'
-
-test('Button', t => {
-  const button = shallow(<Button>Test</Button>)
-  t.ok(button.hasClass('btn'))
-  t.ok(button.hasClass('btn-primary'))
-})
-```
+* No need to update existing unit tests
 
 
 ### How do you include <br/> the global stylesheet in your document?
@@ -266,25 +272,48 @@ export const config = {
 
 
 ### React integration via HoC
+* Primitive implementation
+
+```
+import style from 'bootstrap/dist/bootstrap.css'
+
+const Button = ({ className = '', children }) => {
+  const btnClassName = style['btn'] + ' ' + style['btn-primary']
+
+  return (
+    <button className={btnClassName + ' ' + className}>
+      { children }
+    </button>
+  )
+}
+
+export default Button
+```
+
+* Dealing with the `style` object directly is tedious
+* A lot of string concatenations
+
+
+### React integration via HoC
+* Implementation with `react-css-modules`
+
 ```
 import CSSModules from 'react-css-modules'
 import style from 'bootstrap/dist/bootstrap.css'
 
-const Button = ({ children }) => (
-  <div styleName="btn btn-primary"
-       className="some-global-class">
+const Button = ({ className, children }) => (
+  <button className={className}
+    styleName="btn btn-primary">
     { children }
-  </div>
+  </button>
 )
+
 export default CSSModules(Button, style)
 ```
 
-* `styleName` for **local** styles, `className` for **global** styles.
-* No more
-  ```js
-  const className = style['btn'] + ' ' + style['btn-primary']
-  ```
-* Bonus: detects undefined **local** class names during runtime.
+* `styleName` for **local** styles, `className` for **global** styles
+* Bonus: detects undefined **local** class names during runtime <br />
+  <img class="no-border" data-src="./images/css-modules-error.png">
 
 
 ### Composition
@@ -312,9 +341,43 @@ export default CSSModules(Button, style)
 
 ### Works flawlessly with
 * Preprocessors
+  ```js
+  { test: /\.css$/, loader: "css?module!sass" }
+  ```
 * PostCSS for additional syntax (e.g. variables)
-* CSSNext
+  ```js
+  { test: /\.css$/, loader: "css?module!postcss" }
+  ```
+* CSS Linters
 * ...
+
+
+
+## CSS Modules vs CSS in JS
+
+
+### What is CSS in JS
+* First proposed by @vjeux back in late 2014 
+* Eliminate the global state in CSS by writing CSS in JS
+* Render the CSS as inline styles
+* A lot of implementations followed: Comparison by Michele Bertoli @ <img class="github-logo" src="./images/github-logo.png">[MicheleBertoli/css-in-js](https://github.com/MicheleBertoli/css-in-js)
+
+
+### The problems with CSS in JS
+* Bad tooling for writing CSS in JS
+* Awkward to write when you like camel-case for CSS classes
+* Inline styles don't support all CSS features and <br />
+  generate **a lot** of bloat in your DOM
+* No reuse of existing CSS without converting it first
+* **The more sophisticated solutions add (too) much complexity to you project**
+
+
+
+## Personal Experience with CSS Modules
+* Wrote one open-source react component library for Office UI Fabric using CSS Modules
+* 'Modulified' (parts of) one internal project which now uses a mix of <br />
+  local and global css
+* Used CSS Modules in two small Outlook Add-Ins implemented with React
 
 
 
