@@ -486,5 +486,5 @@ import style from 'bootstrap/less/buttons.less'
 Thanks for listening!
 
 <p id="author">
-  Slides @ <img src="./images/github-logo.png" />[kmees/Slides-ReactNext2016](https://github.com/kmees/ReactNext2016-Slides)
+  Slides @ <img src="./images/github-logo.png" />[kmees/ReactJSDay-Verona-Slides](https://github.com/kmees/ReactJSDay-Verona-Slides)
 </p>
