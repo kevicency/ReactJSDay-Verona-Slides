@@ -20,6 +20,7 @@
 
 
 ## ~~Solutions~~ Workarounds
+* Deep Nesting
 * Architecture Guidelines (BEM, SMACSS, OOCSS, ...)
 * Preprocessors (SASS, LESS, Stylus, ...)
 
@@ -92,7 +93,7 @@ style === {
   </li>
   <li class="fragment" data-fragment-index="2">
     **global** class name is a hash of the **local** class name <br />
-    with the stylesheet added as salt <br />
+    with the metadata of the stylesheet added as salt <br />
     &rarr; **local** class names can be reused across stylesheets
   </li>
   <li class="fragment" data-fragment-index="3">
@@ -124,7 +125,7 @@ assert.notEqual(dialogStyle['btn'], formStyle['btn'])
 
 
 
-
+<!-- .slide: data-transition="fade" data-background="images/vim-tool.jpg" data-background-size="cover" -->
 ## How can we actually use that?
 
 
@@ -185,7 +186,7 @@ Note:
 
 
 <!-- .slide: data-background="images/giphy-confused.gif" data-background-size="cover" -->
-### Is there a human readable version of that?
+### What about the developer experience
 
 Note:
 You might be thinking: 'This is nice for production, but...'
@@ -197,6 +198,8 @@ You might be thinking: 'This is nice for production, but...'
 ```js
 { loader: 'css?module&localIdentName=[path][name]__[local]' }
 ```
+* Output:
+
 ```html
 <button class="node_modules-bootstrap-dist-bootstrap__btn
                node_modules-bootstrap-dist-bootstrap__btn-primary">
@@ -318,25 +321,89 @@ export default CSSModules(Button, style)
 
 ### Composition
 * Compose class names in the same file
-  ```css
-  /* button.css */
-  .button {
-    color: white;
-    background: gray;
-  }
-  .button-primary {
-    composes: button;
-    background: blue;
-  }
-  ```
+
+```css
+/* button.css */
+.button {
+  color: white;
+  background: gray;
+}
+.button-primary {
+  composes: button;
+  background: blue;
+}
+```
+
 * or class names from other CSS modules
-  ```css
-  /* dialog.css */
-  .dialog-button {
-    composes: button from './button.css';
-    background: green;
-  }
-  ```
+
+```css
+/* dialog.css */
+.dialog-button {
+  composes: button from './button.css';
+  background: green;
+}
+```
+
+
+### @value variables
+* Define variables in one file
+
+```css
+/* colors.css */
+@value gray: #c7c7c7;
+@value white: #f9feff;
+@value blue: #0c77f8;
+```
+
+* and import them in your css modules
+
+```css
+/* button.css */
+@value colors: "./colors.css";
+@value gray, white, blue from colors;
+
+.btn { 
+  background-color: gray;
+  color: white;
+}
+.btn-primary { 
+  composes: button;
+  background: blue;
+}
+```
+
+* requires `postcss` and `postcss-modules-values` plugin
+
+
+### :global styles
+* If you desperately need global styles in your css
+  * RTE Content
+  * 3rd party components (DatePicker, highlight.js)
+* Use the **`:global`** keyword
+```css
+.editor { /* editor styles ... */ }
+:global .hljs { /* ... hljs styles */ }
+```
+* Output
+```css
+.95aHt-vFt_5hV0erMo4ahY { /* editor styles ... */ }
+.hljs { /* ... hljs styles */ }
+```
+
+
+### Minification
+* Only import what you need!
+
+```js
+/* Why import everything */
+import style from 'bootstrap/dist/bootstrap'
+```
+```
+/* When we only need buttons */
+import style from 'bootstrap/less/buttons.less'
+```
+
+* Disclaimer: Currently doesn't work with a lot of css libraries because of dependencies
 
 
 ### Works flawlessly with
@@ -350,10 +417,18 @@ export default CSSModules(Button, style)
   ```
 * CSS Linters
 * ...
+* but KISS
 
 
 
-## CSS Modules vs CSS in JS
+<!-- .slide: data-transition="fade" data-background="images/subzero-vs-scorpion.jpg" data-background-size="cover" -->
+## CSS Modules <br /> -vs- <br /> CSS in JS
+
+<div class="subtitle">
+  WARNING: PERSONAL OPINION
+  <hr />
+  The following section contains personal opinion. Viewer descretion advised.
+</div>
 
 
 ### What is CSS in JS
@@ -364,16 +439,42 @@ export default CSSModules(Button, style)
 
 
 ### The problems with CSS in JS
-* Bad tooling for writing CSS in JS
-* Awkward to write when you like camel-case for CSS classes
-* Inline styles don't support all CSS features and <br />
-  generate **a lot** of bloat in your DOM
-* No reuse of existing CSS without converting it first
-* **The more sophisticated solutions add (too) much complexity to you project**
+<ul>
+  <li class="fragment" data-fragment-index="10">
+    Bad tooling for writing CSS in JS
+  </li>
+  <li class="fragment" data-fragment-index="10">
+    Awkward to write when you like camel-case for CSS classes
+  </li>
+  <li class="fragment" data-fragment-index="20">
+    Inline styles don't support all CSS features and <br />
+    generate **a lot** of bloat in your DOM
+  </li>
+  <li class="fragment" data-fragment-index="30">
+    No reuse of existing CSS without converting it first
+  </li>
+  <li class="fragment" data-fragment-index="40">
+    **The more sophisticated solutions add (too) much complexity to you project**
+  </li>
+</ul>
 
 
 
-## Personal Experience with CSS Modules
+## Summary
+
+
+### When to use CSS modules
+* Good fit for
+  * SPAs with a modular UI, especially in combination with React
+  * Component / UI libraries
+  * Bigger (frontend-) teams, especially when artists contribute some CSS
+
+* Bad fit for
+  * CMS projects
+  * Simple campaign websites
+
+
+### Personal Experience with CSS Modules
 * Wrote one open-source react component library for Office UI Fabric using CSS Modules
 * 'Modulified' (parts of) one internal project which now uses a mix of <br />
   local and global css

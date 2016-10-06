@@ -15,12 +15,17 @@
   .reveal [data-background-image="images/giphy-confused.gif"] > *,
   .reveal [data-background-image="images/we-can-do-it.jpg"] > *,
   .reveal [data-background-image="images/mind-blown.gif"] > *,
+  .reveal [data-background-image="images/vim-tool.jpg"] > *,
   .reveal [data-background-image="images/confused.gif"] > * {
     margin-top: 33%;
   }
   .reveal [data-background-image="images/globals-everywhere.jpg"] > *,
   .reveal [data-background-image="images/modules-everywhere.jpg"] > * {
     margin-top: 25%;
+  }
+  .reveal [data-background-image="images/subzero-vs-scorpion.jpg"] > h2 {
+    width: 66%;
+    margin: 0 auto;
   }
 }
 
@@ -48,4 +53,9 @@
 img.no-border {
   border: 0!important;
   box-shadow: none!important;
+}
+
+.subtitle {
+  background: none!important;
+  margin-top: 1.5em!important;
 }
