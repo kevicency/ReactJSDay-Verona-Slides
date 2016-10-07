@@ -395,15 +395,16 @@ export default CSSModules(Button, style)
 * Only import what you need!
 
 ```js
-/* Why import everything */
+/* Why import everything ... */
 import style from 'bootstrap/dist/bootstrap'
 ```
 ```
-/* When we only need buttons */
+/* ... When we only need buttons */
 import style from 'bootstrap/less/buttons.less'
 ```
 
-* Disclaimer: Currently doesn't work with a lot of css libraries because of dependencies
+* *Disclaimer*: Currently doesn't work with a lot of css libraries because of dependencies
+* *Workaround*: Create a local LESS file and `@import` everything you need there
 
 
 ### Works flawlessly with
